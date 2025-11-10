@@ -1,600 +1,104 @@
-/**
- * MRC Email Automation System - 100% Mobile First
- * Optimized for smartphone viewing only
- */
-
-// Configuration
-const CONFIG = {
-  companyName: "MRC Mould & Restoration Co.",
-  companyEmail: "admin@mouldandrestoration.com.au",
-  companyPhone: "1800 954 117",
-  website: "https://mouldandrestoration.com.au/",
-  bccEmail: "atifahnafchw@gmail.com"
-};
-
-/**
- * Main function to process form responses and send emails
- */
-function processFormResponse(e) {
-  try {
-    const formResponse = e.response;
-    const itemResponses = formResponse.getItemResponses();
-    
-    const firstName = itemResponses[0].getResponse();
-    const lastName = itemResponses[1].getResponse();
-    const clientEmail = itemResponses[2].getResponse();
-    const emailTemplate = itemResponses[3].getResponse();
-    const serviceType = itemResponses[4].getResponse();
-    const urgencyLevel = itemResponses[5]?.getResponse() || "normal";
-    const preferredDate = itemResponses[6]?.getResponse() || "";
-    
-    const clientName = `${firstName} ${lastName}`.trim();
-    
-    const templateMap = {
-      "1": "inspection_report",
-      "2": "new_lead", 
-      "3": "inspection_booking"
-    };
-    
-    const templateType = templateMap[emailTemplate] || "new_lead";
-    
-    const serviceTypeMap = {
-      "1": "Mould Inspection",
-      "2": "Repair",
-      "3": "Restoration"
-    };
-    
-    const readableServiceType = serviceTypeMap[serviceType] || "Mould Inspection";
-    
-    const additionalData = {
-      clientEmail: clientEmail,
-      serviceType: readableServiceType,
-      urgencyLevel: urgencyLevel,
-      preferredDate: preferredDate,
-      firstName: firstName
-    };
-    
-    const result = sendMRCEmail(clientEmail, clientName, templateType, additionalData);
-    
-    console.log(`Mobile form processed: Sent ${templateType} to ${clientEmail}`);
-    
-    return result;
-    
-  } catch (error) {
-    console.error("Error processing mobile form:", error);
-    return {
-      success: false,
-      error: error.message
-    };
-  }
-}
-
-/**
- * Send mobile-optimized email
- */
-function sendMRCEmail(clientEmail, clientName, templateType, additionalData = {}) {
-  try {
-    if (!clientEmail || !clientName || !templateType) {
-      throw new Error("Missing required parameters");
-    }
-    
-    const emailContent = generateEmailContent(clientName, templateType, additionalData);
-    
-    GmailApp.sendEmail(
-      clientEmail,
-      emailContent.subject,
-      generatePlainTextVersion(emailContent.body),
-      {
-        htmlBody: emailContent.body,
-        bcc: CONFIG.bccEmail,
-        name: CONFIG.companyName,
-        replyTo: CONFIG.companyEmail
-      }
-    );
-    
-    return {
-      success: true,
-      message: `Mobile email sent to ${clientEmail}`
-    };
-    
-  } catch (error) {
-    console.error("Error sending mobile email:", error);
-    return {
-      success: false,
-      error: error.message
-    };
-  }
-}
-
-/**
- * Generate plain text version for mobile
- */
-function generatePlainTextVersion(htmlBody) {
-  return htmlBody
-    .replace(/<[^>]*>/g, '')
-    .replace(/\s+/g, ' ')
-    .replace(/&nbsp;/g, ' ')
-    .trim();
-}
-
-/**
- * Generate mobile-optimized email content
- */
-function generateEmailContent(clientName, templateType, additionalData = {}) {
-  const currentDate = new Date().toLocaleDateString('en-AU', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
-  
-  switch(templateType) {
-    case "inspection_report":
-      return generateInspectionReportEmail(clientName, currentDate, additionalData);
-    case "new_lead":
-      return generateNewLeadEmail(clientName, currentDate, additionalData);
-    case "inspection_booking":
-      return generateInspectionBookingEmail(clientName, currentDate, additionalData);
-    default:
-      return generateNewLeadEmail(clientName, currentDate, additionalData);
-  }
-}
-
-/**
- * Template 1: Inspection Report Email - Mobile Optimized
- */
-function generateInspectionReportEmail(clientName, currentDate, data) {
-  const subject = `Mould Inspection Report - ${data.preferredDate || 'Your Property'}`;
-  
-  const body = `
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MRC Mould & Restoration Co. - Book Inspection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2d5a7c;
+            --primary-light: #3a7ca5;
+            --accent: #e76f51;
+            --light: #f8f9fa;
+            --dark: #2d3748;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 20px 20px 0 0;
+            text-align: center;
+            margin-bottom: 0;
+        }
+
+        .header h1 {
+            color: var(--primary);
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: var(--dark);
+            font-size: 1.1em;
+        }
+
+        .form-container {
+            background: white;
+            border-radius: 0 0 20px 20px;
+            padding: 0;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .google-form {
+            width: 100%;
+            height: 1300px;
+            border: none;
+            border-radius: 0 0 20px 20px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 25px 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .google-form {
+                height: 1400px;
+            }
+        }
+    </style>
 </head>
-<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f8f9fa; -webkit-text-size-adjust: 100%;">
-  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f8f9fa; padding: 15px 10px;">
-    <tr>
-      <td align="center">
-        <!-- Mobile Container -->
-        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 100%; background-color: #ffffff; border-radius: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.12);">
-          <!-- Mobile Header -->
-          <tr>
-            <td style="background: linear-gradient(135deg, #2d5a7c 0%, #3a7ca5 100%); padding: 40px 25px; text-align: center; color: white; border-radius: 20px 20px 0 0;">
-              <h1 style="margin: 0; font-size: 24px; font-weight: 800; line-height: 1.2;">MRC MOULD INSPECTION REPORT</h1>
-              <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">Professional Mould Assessment</p>
-            </td>
-          </tr>
-          
-          <!-- Mobile Content -->
-          <tr>
-            <td style="padding: 25px 20px;">
-              <!-- Mobile Meta Info -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f8f9fa; padding: 20px; border-radius: 15px; margin-bottom: 25px; border: 1px solid #e9ecef;">
-                <tr>
-                  <td>
-                    <p style="margin: 0 0 8px 0; font-size: 14px; color: #666;"><strong>To:</strong> ${data.clientEmail || 'Client'}</p>
-                    <p style="margin: 0; font-size: 14px; color: #666;"><strong>Date:</strong> ${currentDate}</p>
-                  </td>
-                </tr>
-              </table>
-              
-              <p style="margin: 0 0 20px 0; font-size: 16px; line-height: 1.6;">Dear ${clientName},</p>
-              
-              <p style="margin: 0 0 20px 0; font-size: 16px; line-height: 1.6;">Please find your <strong style="color: #2d5a7c;">Mould Inspection Report</strong> attached.</p>
-              
-              <!-- Mobile Highlight Box -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f0f8ff; border-left: 4px solid #3a7ca5; padding: 20px; margin: 20px 0;">
-                <tr>
-                  <td>
-                    <p style="margin: 0; font-size: 15px; line-height: 1.6;"><strong>Inspection Summary:</strong> Our inspection has identified mould contamination primarily caused by elevated humidity levels and inadequate ventilation.</p>
-                  </td>
-                </tr>
-              </table>
-              
-              <!-- Mobile Key Findings -->
-              <h2 style="color: #2d5a7c; border-bottom: 2px solid #3a7ca5; padding-bottom: 10px; margin: 25px 0 15px 0; font-size: 20px; font-weight: 700;">Key Findings</h2>
-              
-              <p style="margin: 0 0 15px 0; font-size: 16px; line-height: 1.6;"><strong>Affected Areas:</strong></p>
-              <ul style="margin: 0 0 20px 0; padding-left: 20px;">
-                <li style="margin-bottom: 8px; font-size: 15px;">Main bathroom surfaces</li>
-                <li style="margin-bottom: 8px; font-size: 15px;">Ensuite bathroom areas</li>
-                <li style="margin-bottom: 8px; font-size: 15px;">Adjacent bedroom ceiling</li>
-              </ul>
-              
-              <p style="margin: 0 0 15px 0; font-size: 16px; line-height: 1.6;"><strong>Primary Causes:</strong></p>
-              <p style="margin: 0 0 20px 0; font-size: 15px; line-height: 1.6;">Inadequate ventilation combined with elevated indoor humidity levels (68% RH measured).</p>
-              
-              <!-- Mobile Solutions -->
-              <h2 style="color: #2d5a7c; border-bottom: 2px solid #3a7ca5; padding-bottom: 10px; margin: 25px 0 15px 0; font-size: 20px; font-weight: 700;">Recommended Solutions</h2>
-              
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f8f9fa; padding: 18px; border-radius: 12px; margin: 12px 0; border-left: 4px solid #2a9d8f;">
-                <tr>
-                  <td>
-                    <h4 style="margin: 0 0 8px 0; color: #2d5a7c; font-size: 16px;">Professional Remediation</h4>
-                    <p style="margin: 0; font-size: 14px; line-height: 1.5;">IICRC-certified treatment including HEPA vacuuming and antimicrobial application.</p>
-                  </td>
-                </tr>
-              </table>
-              
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f8f9fa; padding: 18px; border-radius: 12px; margin: 12px 0; border-left: 4px solid #2a9d8f;">
-                <tr>
-                  <td>
-                    <h4 style="margin: 0 0 8px 0; color: #2d5a7c; font-size: 16px;">Ventilation Upgrade</h4>
-                    <p style="margin: 0; font-size: 14px; line-height: 1.5;">Install 80 CFM exhaust fans with run-on timers to prevent recurrence.</p>
-                  </td>
-                </tr>
-              </table>
-              
-              <!-- Mobile Investment -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background: linear-gradient(135deg, #2d5a7c, #3a7ca5); padding: 20px; border-radius: 15px; margin: 20px 0; text-align: center;">
-                <tr>
-                  <td>
-                    <p style="margin: 0 0 8px 0; font-size: 14px; color: white; opacity: 0.9;">Total Investment</p>
-                    <p style="margin: 0; font-size: 28px; font-weight: bold; color: white;">$4,850 + GST</p>
-                    <p style="margin: 8px 0 0 0; font-size: 13px; color: white; opacity: 0.8;">Includes 12-month warranty</p>
-                  </td>
-                </tr>
-              </table>
-              
-              <!-- Mobile CTA Button -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 25px 0; text-align: center;">
-                <tr>
-                  <td>
-                    <a href="${CONFIG.website}" style="display: inline-block; background: #e76f51; color: white; padding: 16px 30px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 16px; width: 90%; max-width: 280px;">View Full Report Details</a>
-                  </td>
-                </tr>
-              </table>
-              
-              <p style="margin: 0 0 15px 0; font-size: 15px; line-height: 1.6;">We understand mould issues can be concerning. We're here to support you through the complete resolution process.</p>
-              
-              <p style="margin: 0; font-size: 15px; line-height: 1.6;">Contact us with any questions about the findings or next steps.</p>
-            </td>
-          </tr>
-          
-          <!-- Mobile Footer -->
-          <tr>
-            <td style="background-color: #2d3748; color: white; padding: 30px 20px; text-align: center; border-radius: 0 0 20px 20px;">
-              <p style="margin: 0 0 15px 0; font-size: 18px; font-weight: bold;">${CONFIG.companyName}</p>
-              <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                <tr>
-                  <td align="center">
-                    <p style="margin: 8px 0; font-size: 15px;">Phone: ${CONFIG.companyPhone}</p>
-                    <p style="margin: 8px 0; font-size: 15px;">Email: ${CONFIG.companyEmail}</p>
-                    <p style="margin: 8px 0; font-size: 15px;">Web: <a href="${CONFIG.website}" style="color: white; text-decoration: none;">${CONFIG.website}</a></p>
-                  </td>
-                </tr>
-              </table>
-              <p style="margin: 15px 0 0 0; font-size: 13px; opacity: 0.8;">Restoring Your Spaces, Protecting Your Health</p>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>MRC Mould & Restoration Co.</h1>
+            <p>Book Your Free Mould Inspection</p>
+        </div>
+        
+        <div class="form-container">
+            <!-- Your Google Form Embed -->
+            <iframe 
+                src="https://docs.google.com/forms/d/e/1FAIpQLScFPDoDp-rwHPd_mhk70nQvc4pTPahzuwkBpjeWVssYWEPeLQ/viewform?embedded=true" 
+                class="google-form"
+                loading="lazy">
+                Loading...
+            </iframe>
+        </div>
+    </div>
 </body>
 </html>
-  `;
-  
-  return { subject, body };
-}
-
-/**
- * Template 2: New Lead Response Email - Mobile Optimized
- */
-function generateNewLeadEmail(clientName, currentDate, data) {
-  const subject = `Thanks for Your Enquiry - MRC Mould`;
-  
-  const body = `
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f8f9fa; -webkit-text-size-adjust: 100%;">
-  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f8f9fa; padding: 15px 10px;">
-    <tr>
-      <td align="center">
-        <!-- Mobile Container -->
-        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 100%; background-color: #ffffff; border-radius: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.12);">
-          <!-- Mobile Header -->
-          <tr>
-            <td style="background: linear-gradient(135deg, #2d5a7c 0%, #3a7ca5 100%); padding: 40px 25px; text-align: center; color: white; border-radius: 20px 20px 0 0;">
-              <h1 style="margin: 0; font-size: 24px; font-weight: 800; line-height: 1.2;">THANKS FOR YOUR ENQUIRY</h1>
-              <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">We're Here to Help</p>
-            </td>
-          </tr>
-          
-          <!-- Mobile Content -->
-          <tr>
-            <td style="padding: 25px 20px;">
-              <!-- Mobile Meta Info -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f8f9fa; padding: 20px; border-radius: 15px; margin-bottom: 25px; border: 1px solid #e9ecef;">
-                <tr>
-                  <td>
-                    <p style="margin: 0 0 8px 0; font-size: 14px; color: #666;"><strong>To:</strong> ${data.clientEmail || 'Client'}</p>
-                    <p style="margin: 0; font-size: 14px; color: #666;"><strong>Date:</strong> ${currentDate}</p>
-                  </td>
-                </tr>
-              </table>
-              
-              <p style="margin: 0 0 20px 0; font-size: 16px; line-height: 1.6;">Hi ${data.firstName || clientName},</p>
-              
-              <p style="margin: 0 0 20px 0; font-size: 16px; line-height: 1.6;">Thanks for reaching out to <strong style="color: #2d5a7c;">MRC Mould & Restoration Co.</strong></p>
-              
-              <p style="margin: 0 0 25px 0; font-size: 16px; line-height: 1.6;">We've received your enquiry about <strong style="color: #2d5a7c;">${data.serviceType || 'mould inspection'}</strong>.</p>
-              
-              <!-- Mobile Next Steps -->
-              <h2 style="color: #2d5a7c; border-bottom: 2px solid #3a7ca5; padding-bottom: 10px; margin: 25px 0 15px 0; font-size: 20px; font-weight: 700;">What Happens Next</h2>
-              
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 15px 0;">
-                <tr>
-                  <td style="padding: 12px 0; border-bottom: 1px solid #f0f0f0;">
-                    <p style="margin: 0; font-size: 15px;">✓ Review your enquiry details</p>
-                  </td>
-                </tr>
-                <tr>
-                  <td style="padding: 12px 0; border-bottom: 1px solid #f0f0f0;">
-                    <p style="margin: 0; font-size: 15px;">✓ Contact you to discuss needs</p>
-                  </td>
-                </tr>
-                <tr>
-                  <td style="padding: 12px 0;">
-                    <p style="margin: 0; font-size: 15px;">✓ Schedule professional inspection</p>
-                  </td>
-                </tr>
-              </table>
-              
-              <!-- Mobile Operating Hours -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f0f8ff; border-left: 4px solid #3a7ca5; padding: 20px; margin: 20px 0;">
-                <tr>
-                  <td>
-                    <p style="margin: 0; font-weight: bold; font-size: 16px;">Our Team Operates:</p>
-                    <p style="margin: 8px 0 0 0; font-size: 17px; color: #2d5a7c;">7 Days • 7am - 7pm</p>
-                  </td>
-                </tr>
-              </table>
-              
-              ${data.preferredDate ? `
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #fff3cd; padding: 15px; border-radius: 12px; margin: 15px 0; border: 1px solid #ffeaa7;">
-                <tr>
-                  <td>
-                    <p style="margin: 0; font-size: 15px; color: #856404;"><strong>Your Preferred Date:</strong> ${data.preferredDate}</p>
-                  </td>
-                </tr>
-              </table>
-              ` : ''}
-              
-              <!-- Mobile CTA Button -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 25px 0; text-align: center;">
-                <tr>
-                  <td>
-                    <a href="${CONFIG.website}" style="display: inline-block; background: #e76f51; color: white; padding: 16px 30px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 16px; width: 90%; max-width: 280px;">Learn More About Our Services</a>
-                  </td>
-                </tr>
-              </table>
-              
-              <p style="margin: 0; font-size: 15px; line-height: 1.6; text-align: center; color: #666;">We look forward to helping you restore your property to a safe, healthy condition.</p>
-            </td>
-          </tr>
-          
-          <!-- Mobile Footer -->
-          <tr>
-            <td style="background-color: #2d3748; color: white; padding: 30px 20px; text-align: center; border-radius: 0 0 20px 20px;">
-              <p style="margin: 0 0 15px 0; font-size: 18px; font-weight: bold;">${CONFIG.companyName}</p>
-              <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                <tr>
-                  <td align="center">
-                    <p style="margin: 8px 0; font-size: 15px;">Phone: ${CONFIG.companyPhone}</p>
-                    <p style="margin: 8px 0; font-size: 15px;">Email: ${CONFIG.companyEmail}</p>
-                    <p style="margin: 8px 0; font-size: 15px;">Web: <a href="${CONFIG.website}" style="color: white; text-decoration: none;">${CONFIG.website}</a></p>
-                  </td>
-                </tr>
-              </table>
-              <p style="margin: 15px 0 0 0; font-size: 13px; opacity: 0.8;">Restoring Your Spaces, Protecting Your Health</p>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>
-  `;
-  
-  return { subject, body };
-}
-
-/**
- * Template 3: Inspection Booking Confirmation - Mobile Optimized
- */
-function generateInspectionBookingEmail(clientName, currentDate, data) {
-  const subject = `Inspection Confirmed - ${data.preferredDate || 'Your Booking'}`;
-  
-  const body = `
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f8f9fa; -webkit-text-size-adjust: 100%;">
-  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f8f9fa; padding: 15px 10px;">
-    <tr>
-      <td align="center">
-        <!-- Mobile Container -->
-        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 100%; background-color: #ffffff; border-radius: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.12);">
-          <!-- Mobile Header -->
-          <tr>
-            <td style="background: linear-gradient(135deg, #2d5a7c 0%, #3a7ca5 100%); padding: 40px 25px; text-align: center; color: white; border-radius: 20px 20px 0 0;">
-              <h1 style="margin: 0; font-size: 24px; font-weight: 800; line-height: 1.2;">INSPECTION CONFIRMED</h1>
-              <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">Professional Mould Inspection</p>
-            </td>
-          </tr>
-          
-          <!-- Mobile Content -->
-          <tr>
-            <td style="padding: 25px 20px;">
-              <!-- Mobile Meta Info -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f8f9fa; padding: 20px; border-radius: 15px; margin-bottom: 25px; border: 1px solid #e9ecef;">
-                <tr>
-                  <td>
-                    <p style="margin: 0 0 8px 0; font-size: 14px; color: #666;"><strong>To:</strong> ${data.clientEmail || 'Client'}</p>
-                    <p style="margin: 0; font-size: 14px; color: #666;"><strong>Date:</strong> ${currentDate}</p>
-                  </td>
-                </tr>
-              </table>
-              
-              <p style="margin: 0 0 20px 0; font-size: 16px; line-height: 1.6;">Dear ${clientName},</p>
-              
-              <p style="margin: 0 0 20px 0; font-size: 16px; line-height: 1.6;">Thank you for booking with <strong style="color: #2d5a7c;">MRC Mould & Restoration Co.</strong></p>
-              
-              <!-- Mobile Booking Details -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background: linear-gradient(135deg, #e8f4f8, #d4e7ff); padding: 25px; border-radius: 15px; margin: 20px 0; border: 2px solid #3a7ca5; text-align: center;">
-                <tr>
-                  <td>
-                    <h3 style="margin: 0 0 15px 0; color: #2d5a7c; font-size: 20px;">Booking Details</h3>
-                    <p style="margin: 10px 0; font-size: 17px;"><strong>Service:</strong> ${data.serviceType || 'Mould Inspection'}</p>
-                    ${data.preferredDate ? `<p style="margin: 10px 0; font-size: 17px;"><strong>Preferred Date:</strong> ${data.preferredDate}</p>` : ''}
-                    <p style="margin: 15px 0 0 0; color: #2a9d8f; font-weight: bold; font-size: 18px;">Status: Confirmed ✓</p>
-                  </td>
-                </tr>
-              </table>
-              
-              <!-- Mobile Next Steps -->
-              <h2 style="color: #2d5a7c; border-bottom: 2px solid #3a7ca5; padding-bottom: 10px; margin: 25px 0 15px 0; font-size: 20px; font-weight: 700;">Next Steps</h2>
-              
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 15px 0;">
-                <tr>
-                  <td style="padding: 12px 0; border-bottom: 1px solid #f0f0f0;">
-                    <p style="margin: 0; font-size: 15px;">• Contact within 24 hours</p>
-                  </td>
-                </tr>
-                <tr>
-                  <td style="padding: 12px 0; border-bottom: 1px solid #f0f0f0;">
-                    <p style="margin: 0; font-size: 15px;">• Arrange inspection time</p>
-                  </td>
-                </tr>
-                <tr>
-                  <td style="padding: 12px 0;">
-                    <p style="margin: 0; font-size: 15px;">• Provide detailed report</p>
-                  </td>
-                </tr>
-              </table>
-              
-              <!-- Mobile Free Inspection -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #d4edda; padding: 20px; border-radius: 12px; margin: 20px 0; border: 1px solid #c3e6cb;">
-                <tr>
-                  <td style="text-align: center;">
-                    <p style="margin: 0; font-size: 18px; font-weight: bold; color: #155724;">FREE INSPECTION</p>
-                    <p style="margin: 8px 0 0 0; font-size: 15px; color: #155724;">Includes comprehensive report with treatment options</p>
-                  </td>
-                </tr>
-              </table>
-              
-              <!-- Mobile CTA Button -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 25px 0; text-align: center;">
-                <tr>
-                  <td>
-                    <a href="${CONFIG.website}" style="display: inline-block; background: #e76f51; color: white; padding: 16px 30px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 16px; width: 90%; max-width: 280px;">Learn About Our Process</a>
-                  </td>
-                </tr>
-              </table>
-              
-              <p style="margin: 0; font-size: 15px; line-height: 1.6; text-align: center; color: #666;">We look forward to resolving your mould concerns quickly and professionally.</p>
-            </td>
-          </tr>
-          
-          <!-- Mobile Footer -->
-          <tr>
-            <td style="background-color: #2d3748; color: white; padding: 30px 20px; text-align: center; border-radius: 0 0 20px 20px;">
-              <p style="margin: 0 0 15px 0; font-size: 18px; font-weight: bold;">${CONFIG.companyName}</p>
-              <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                <tr>
-                  <td align="center">
-                    <p style="margin: 8px 0; font-size: 15px;">Phone: ${CONFIG.companyPhone}</p>
-                    <p style="margin: 8px 0; font-size: 15px;">Email: ${CONFIG.companyEmail}</p>
-                    <p style="margin: 8px 0; font-size: 15px;">Web: <a href="${CONFIG.website}" style="color: white; text-decoration: none;">${CONFIG.website}</a></p>
-                  </td>
-                </tr>
-              </table>
-              <p style="margin: 15px 0 0 0; font-size: 13px; opacity: 0.8;">Restoring Your Spaces, Protecting Your Health</p>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>
-  `;
-  
-  return { subject, body };
-}
-
-/**
- * Test all mobile templates
- */
-function testAllMobileTemplates() {
-  const testEmail = "atifahnafchw@gmail.com";
-  const testName = "John Smith";
-  
-  console.log("Testing Mobile Email Templates...");
-  
-  const templates = [
-    { type: "inspection_report", name: "Inspection Report" },
-    { type: "new_lead", name: "New Lead" },
-    { type: "inspection_booking", name: "Inspection Booking" }
-  ];
-  
-  templates.forEach(template => {
-    const result = sendMRCEmail(testEmail, testName, template.type, {
-      clientEmail: testEmail,
-      serviceType: "Mould Inspection",
-      urgencyLevel: "normal",
-      preferredDate: "15th November 2024",
-      firstName: "John"
-    });
-    
-    console.log(`${template.name}:`, result.success ? "MOBILE SUCCESS" : "FAILED");
-  });
-}
-
-/**
- * Quick mobile test
- */
-function testMobileEmail() {
-  const clientEmail = "atifahnafchw@gmail.com";
-  const clientName = "Mobile Test";
-  const templateType = "new_lead";
-  
-  const additionalData = {
-    clientEmail: clientEmail,
-    serviceType: "Mould Inspection",
-    urgencyLevel: "rush",
-    preferredDate: "Today",
-    firstName: "Mobile"
-  };
-  
-  const result = sendMRCEmail(clientEmail, clientName, templateType, additionalData);
-  console.log("Mobile test result:", result);
-  return result;
-}
-
-// Helper functions
-function checkTriggers() {
-  const triggers = ScriptApp.getProjectTriggers();
-  console.log("Mobile triggers:");
-  triggers.forEach(trigger => {
-    console.log(`- ${trigger.getHandlerFunction()}`);
-  });
-}
-
-function debugMobile() {
-  console.log("=== MOBILE DEBUG ===");
-  const testResult = testMobileEmail();
-  console.log("Test result:", testResult);
-  console.log("=== DEBUG COMPLETE ===");
-}

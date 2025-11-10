@@ -1,640 +1,600 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MRC Mould & Restoration Co.</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+/**
+ * MRC Email Automation System - 100% Mobile First
+ * Optimized for smartphone viewing only
+ */
 
-        :root {
-            --primary: #2d5a7c;
-            --primary-light: #3a7ca5;
-            --primary-dark: #1e3a52;
-            --accent: #e76f51;
-            --accent-light: #f4a261;
-            --accent-dark: #d45c3f;
-            --light: #f8f9fa;
-            --dark: #2d3748;
-            --gray: #6c757d;
-            --light-gray: #e9ecef;
-            --success: #2a9d8f;
-            --error: #e76f51;
-            --cream: #fefae0;
-            --sage: #ccd5ae;
-        }
+// Configuration
+const CONFIG = {
+  companyName: "MRC Mould & Restoration Co.",
+  companyEmail: "admin@mouldandrestoration.com.au",
+  companyPhone: "1800 954 117",
+  website: "https://mouldandrestoration.com.au/",
+  bccEmail: "atifahnafchw@gmail.com"
+};
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.7;
-            color: var(--dark);
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        .particles-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        .particle {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
-            position: relative;
-            z-index: 1;
-        }
-
-        header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 25px 25px 0 0;
-            padding: 50px 40px;
-            text-align: center;
-            box-shadow: 
-                0 25px 50px rgba(0, 0, 0, 0.15),
-                inset 0 1px 0 rgba(255, 255, 255, 0.6);
-            margin-bottom: 0;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            transform: translateY(-50px);
-            opacity: 0;
-        }
-
-        .logo h1 {
-            color: var(--primary);
-            margin-bottom: 15px;
-            font-size: 2.8em;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            opacity: 0;
-            transform: translateY(30px);
-        }
-
-        .logo p {
-            color: var(--gray);
-            font-size: 1.3em;
-            font-weight: 400;
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        .form-wrapper {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            padding: 60px 50px;
-            border-radius: 0 0 25px 25px;
-            box-shadow: 
-                0 25px 60px rgba(0, 0, 0, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            transform: translateY(50px);
-            opacity: 0;
-            min-height: 600px;
-        }
-
-        .form-wrapper h2 {
-            color: var(--primary);
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 2.2em;
-            font-weight: 700;
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        .subtitle {
-            text-align: center;
-            color: var(--gray);
-            margin-bottom: 40px;
-            font-size: 1.2em;
-            font-weight: 400;
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        .google-form-container {
-            width: 100%;
-            height: 1300px;
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            opacity: 0;
-            transform: translateY(30px);
-        }
-
-        .loading-message {
-            text-align: center;
-            padding: 40px;
-            color: var(--gray);
-            font-size: 1.1em;
-        }
-
-        .success-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.98);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 0 0 25px 25px;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.5s ease;
-            z-index: 10;
-        }
-
-        .success-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .success-content {
-            text-align: center;
-            padding: 50px;
-            max-width: 500px;
-        }
-
-        .success-icon {
-            font-size: 4em;
-            margin-bottom: 20px;
-            animation: bounce 2s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
-            40% {transform: translateY(-10px);}
-            60% {transform: translateY(-5px);}
-        }
-
-        .success-content h3 {
-            color: var(--success);
-            margin-bottom: 20px;
-            font-size: 2em;
-        }
-
-        .success-content p {
-            color: var(--gray);
-            margin-bottom: 15px;
-            font-size: 1.1em;
-        }
-
-        .close-success {
-            background: var(--accent);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1em;
-            margin-top: 20px;
-            transition: all 0.3s ease;
-        }
-
-        .close-success:hover {
-            background: var(--accent-light);
-            transform: translateY(-2px);
-        }
-
-        footer {
-            background: rgba(45, 58, 84, 0.95);
-            backdrop-filter: blur(20px);
-            color: white;
-            text-align: center;
-            padding: 50px 40px;
-            border-radius: 25px;
-            margin-top: 40px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            opacity: 0;
-            transform: translateY(30px);
-        }
-
-        .contact-info h3 {
-            margin-bottom: 25px;
-            color: var(--light);
-            font-size: 1.5em;
-        }
-
-        .contact-info p {
-            margin: 10px 0;
-            font-size: 1.1em;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 15px;
-            }
-            
-            .form-wrapper {
-                padding: 40px 25px;
-            }
-            
-            header {
-                padding: 40px 25px;
-            }
-            
-            .logo h1 {
-                font-size: 2.2em;
-            }
-            
-            .google-form-container {
-                height: 1500px;
-            }
-        }
-
-        .form-notice {
-            text-align: center;
-            background: linear-gradient(135deg, #e8f4f8, #d4e7ff);
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-            border-left: 4px solid var(--primary);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .form-notice h4 {
-            color: var(--primary-dark);
-            margin-bottom: 15px;
-            font-size: 1.3em;
-            font-weight: 600;
-        }
-
-        .form-notice p {
-            color: var(--dark);
-            margin: 8px 0;
-            font-size: 1.05em;
-        }
-
-        .benefits-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin: 40px 0;
-        }
-
-        .benefit-card {
-            background: linear-gradient(135deg, var(--cream), var(--sage));
-            padding: 25px;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .benefit-icon {
-            font-size: 2.5em;
-            margin-bottom: 15px;
-        }
-
-        .benefit-card h4 {
-            color: var(--primary-dark);
-            margin-bottom: 10px;
-        }
-
-        .benefit-card p {
-            color: var(--dark);
-            font-size: 0.95em;
-        }
-    </style>
-</head>
-<body>
-    <div class="particles-container" id="particlesContainer"></div>
+/**
+ * Main function to process form responses and send emails
+ */
+function processFormResponse(e) {
+  try {
+    const formResponse = e.response;
+    const itemResponses = formResponse.getItemResponses();
     
-    <div class="container">
-        <header>
-            <div class="logo">
-                <h1>MRC Mould & Restoration Co.</h1>
-                <p>Professional Mould Inspection & Remediation Services</p>
-            </div>
-        </header>
+    const firstName = itemResponses[0].getResponse();
+    const lastName = itemResponses[1].getResponse();
+    const clientEmail = itemResponses[2].getResponse();
+    const emailTemplate = itemResponses[3].getResponse();
+    const serviceType = itemResponses[4].getResponse();
+    const urgencyLevel = itemResponses[5]?.getResponse() || "normal";
+    const preferredDate = itemResponses[6]?.getResponse() || "";
+    
+    const clientName = `${firstName} ${lastName}`.trim();
+    
+    const templateMap = {
+      "1": "inspection_report",
+      "2": "new_lead", 
+      "3": "inspection_booking"
+    };
+    
+    const templateType = templateMap[emailTemplate] || "new_lead";
+    
+    const serviceTypeMap = {
+      "1": "Mould Inspection",
+      "2": "Repair",
+      "3": "Restoration"
+    };
+    
+    const readableServiceType = serviceTypeMap[serviceType] || "Mould Inspection";
+    
+    const additionalData = {
+      clientEmail: clientEmail,
+      serviceType: readableServiceType,
+      urgencyLevel: urgencyLevel,
+      preferredDate: preferredDate,
+      firstName: firstName
+    };
+    
+    const result = sendMRCEmail(clientEmail, clientName, templateType, additionalData);
+    
+    console.log(`Mobile form processed: Sent ${templateType} to ${clientEmail}`);
+    
+    return result;
+    
+  } catch (error) {
+    console.error("Error processing mobile form:", error);
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+}
 
-        <main>
-            <div class="form-wrapper">
-                <h2>Book Your Free Mould Inspection</h2>
-                <p class="subtitle">Complete the form below and we'll contact you within 24 hours</p>
+/**
+ * Send mobile-optimized email
+ */
+function sendMRCEmail(clientEmail, clientName, templateType, additionalData = {}) {
+  try {
+    if (!clientEmail || !clientName || !templateType) {
+      throw new Error("Missing required parameters");
+    }
+    
+    const emailContent = generateEmailContent(clientName, templateType, additionalData);
+    
+    GmailApp.sendEmail(
+      clientEmail,
+      emailContent.subject,
+      generatePlainTextVersion(emailContent.body),
+      {
+        htmlBody: emailContent.body,
+        bcc: CONFIG.bccEmail,
+        name: CONFIG.companyName,
+        replyTo: CONFIG.companyEmail
+      }
+    );
+    
+    return {
+      success: true,
+      message: `Mobile email sent to ${clientEmail}`
+    };
+    
+  } catch (error) {
+    console.error("Error sending mobile email:", error);
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+}
 
-                <div class="benefits-grid">
-                    <div class="benefit-card">
-                        <div class="benefit-icon">🔍</div>
-                        <h4>Free Inspection</h4>
-                        <p>Comprehensive mould assessment at no cost to you</p>
-                    </div>
-                    <div class="benefit-card">
-                        <div class="benefit-icon">⚡</div>
-                        <h4>24/7 Response</h4>
-                        <p>Emergency services available for urgent situations</p>
-                    </div>
-                    <div class="benefit-card">
-                        <div class="benefit-icon">🛡️</div>
-                        <h4>Certified Experts</h4>
-                        <p>Fully licensed and insured mould specialists</p>
-                    </div>
-                </div>
+/**
+ * Generate plain text version for mobile
+ */
+function generatePlainTextVersion(htmlBody) {
+  return htmlBody
+    .replace(/<[^>]*>/g, '')
+    .replace(/\s+/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .trim();
+}
 
-                <div class="form-notice">
-                    <h4>📋 What to Expect After Submission:</h4>
-                    <p>✓ Instant confirmation email with your inspection details</p>
-                    <p>✓ Work order automatically sent to our team</p>
-                    <p>✓ We'll contact you within 24 hours to schedule</p>
-                </div>
+/**
+ * Generate mobile-optimized email content
+ */
+function generateEmailContent(clientName, templateType, additionalData = {}) {
+  const currentDate = new Date().toLocaleDateString('en-AU', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+  
+  switch(templateType) {
+    case "inspection_report":
+      return generateInspectionReportEmail(clientName, currentDate, additionalData);
+    case "new_lead":
+      return generateNewLeadEmail(clientName, currentDate, additionalData);
+    case "inspection_booking":
+      return generateInspectionBookingEmail(clientName, currentDate, additionalData);
+    default:
+      return generateNewLeadEmail(clientName, currentDate, additionalData);
+  }
+}
 
-                <!-- CORRECTED Google Form Embed URL -->
-                <iframe 
-                    src="https://docs.google.com/forms/d/e/1FAIpQLScFPDoDp-rwHPd_mhk70nQvc4pTPahzuwkBpjeWVssYWEPeLQ/viewform?usp=sharing&ouid=101478954536321207932" 
-                    class="google-form-container" 
-                    id="googleForm"
-                    loading="lazy"
-                    onload="onFormLoad()">
-                    Loading...
-                </iframe>
-
-                <div class="success-overlay" id="successOverlay">
-                    <div class="success-content">
-                        <div class="success-icon">✨</div>
-                        <h3>Thank You!</h3>
-                        <p>Your inspection request has been received and confirmed!</p>
-                        <p><strong>We've sent a confirmation email to your inbox.</strong></p>
-                        <p>Our team will contact you within 24 hours to schedule your inspection.</p>
-                        <div style="background: rgba(42, 157, 143, 0.1); padding: 20px; border-radius: 12px; margin: 25px 0;">
-                            <p style="margin: 8px 0; font-weight: 600; color: var(--success);">📧 Confirmation sent to your email</p>
-                            <p style="margin: 8px 0; font-weight: 600; color: var(--success);">📋 Work order sent to our team</p>
-                            <p style="margin: 8px 0; font-weight: 600; color: var(--success);">⏰ Contact within 24 hours</p>
-                        </div>
-                        <button class="close-success" onclick="closeSuccessMessage()">
-                            Close This Message
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </main>
-
-        <footer>
-            <div class="contact-info">
-                <h3>Get In Touch</h3>
-                <p>📞 1800 954 117</p>
-                <p>✉️ admin@mouldandrestoration.com.au</p>
-                <p>🕒 Mon-Sun: 7am - 7pm</p>
-                <p style="margin-top: 20px; opacity: 0.8;">Serving Melbourne & Surrounding Areas</p>
-            </div>
-        </footer>
-    </div>
-
-    <script>
-        // Create animated particles
-        function createParticles() {
-            const container = document.getElementById('particlesContainer');
-            const particles = [];
-            const colors = [
-                'rgba(255, 255, 255, 0.15)',
-                'rgba(255, 255, 255, 0.1)',
-                'rgba(255, 255, 255, 0.08)',
-                'rgba(255, 255, 255, 0.05)'
-            ];
-            
-            for (let i = 0; i < 25; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                
-                const size = Math.random() * 80 + 20;
-                const left = Math.random() * 100;
-                const top = Math.random() * 100;
-                const color = colors[Math.floor(Math.random() * colors.length)];
-                
-                particle.style.width = `${size}px`;
-                particle.style.height = `${size}px`;
-                particle.style.left = `${left}%`;
-                particle.style.top = `${top}%`;
-                particle.style.background = color;
-                particle.style.opacity = '0';
-                
-                container.appendChild(particle);
-                particles.push(particle);
-            }
-            
-            // Animate particles with Anime.js
-            anime({
-                targets: '.particle',
-                opacity: [
-                    { value: 0, duration: 0 },
-                    { value: 1, duration: 2000, easing: 'easeOutQuad' }
-                ],
-                translateX: () => anime.random(-300, 300),
-                translateY: () => anime.random(-300, 300),
-                rotate: () => anime.random(-180, 180),
-                scale: () => anime.random(0.5, 1.5),
-                duration: () => anime.random(15000, 30000),
-                delay: () => anime.random(0, 2000),
-                easing: 'easeInOutSine',
-                loop: true,
-                direction: 'alternate'
-            });
-        }
-
-        // Page load animations
-        function initPageAnimations() {
-            const tl = anime.timeline({
-                duration: 1200,
-                easing: 'easeOutElastic(1, .8)'
-            });
-
-            // Header animation
-            tl.add({
-                targets: 'header',
-                translateY: 0,
-                opacity: 1,
-                duration: 1000
-            });
-
-            // Logo animations
-            tl.add({
-                targets: '.logo h1',
-                translateY: 0,
-                opacity: 1,
-                duration: 800
-            }, '-=800').add({
-                targets: '.logo p',
-                translateY: 0,
-                opacity: 1,
-                duration: 600
-            }, '-=600');
-
-            // Form wrapper animation
-            tl.add({
-                targets: '.form-wrapper',
-                translateY: 0,
-                opacity: 1,
-                duration: 1000
-            }, '-=400');
-
-            // Title animations
-            tl.add({
-                targets: '.form-wrapper h2',
-                translateY: 0,
-                opacity: 1,
-                duration: 800
-            }, '-=800').add({
-                targets: '.subtitle',
-                translateY: 0,
-                opacity: 1,
-                duration: 600
-            }, '-=600');
-
-            // Benefits grid animation
-            tl.add({
-                targets: '.benefit-card',
-                translateY: 0,
-                opacity: 1,
-                duration: 800,
-                delay: anime.stagger(100)
-            });
-
-            // Form notice animation
-            tl.add({
-                targets: '.form-notice',
-                translateY: 0,
-                opacity: 1,
-                duration: 800,
-                delay: 200
-            });
-
-            // Google form animation
-            tl.add({
-                targets: '.google-form-container',
-                translateY: 0,
-                opacity: 1,
-                duration: 800,
-                delay: 400
-            });
-
-            // Footer animation
-            tl.add({
-                targets: 'footer',
-                translateY: 0,
-                opacity: 1,
-                duration: 600
-            });
-        }
-
-        function onFormLoad() {
-            console.log('Google Form loaded successfully');
-        }
-
-        function showSuccessMessage() {
-            const overlay = document.getElementById('successOverlay');
-            const form = document.getElementById('googleForm');
-            
-            // Animate form out
-            anime({
-                targets: form,
-                opacity: 0,
-                scale: 0.9,
-                duration: 500,
-                easing: 'easeInOutCubic'
-            });
-            
-            // Show success message
-            setTimeout(() => {
-                overlay.classList.add('active');
-                anime({
-                    targets: overlay,
-                    opacity: 1,
-                    duration: 800,
-                    easing: 'easeOutCubic'
-                });
-            }, 300);
-        }
-
-        function closeSuccessMessage() {
-            const overlay = document.getElementById('successOverlay');
-            const form = document.getElementById('googleForm');
-            
-            // Hide success message
-            anime({
-                targets: overlay,
-                opacity: 0,
-                duration: 500,
-                easing: 'easeInOutCubic',
-                complete: function() {
-                    overlay.classList.remove('active');
-                    
-                    // Show form again
-                    anime({
-                        targets: form,
-                        opacity: 1,
-                        scale: 1,
-                        duration: 500,
-                        easing: 'easeOutCubic'
-                    });
-                }
-            });
-        }
-
-        // Check URL for success parameter
-        function checkForSuccess() {
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('submit') === 'success') {
-                setTimeout(showSuccessMessage, 1000);
-            }
-        }
-
-        // Listen for form submission
-        function setupFormListener() {
-            // Check every second if we're on the success page
-            setInterval(() => {
-                if (document.querySelector('div[role="heading"]')?.textContent?.includes('Your response has been recorded')) {
-                    showSuccessMessage();
-                }
-            }, 1000);
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            createParticles();
-            initPageAnimations();
-            checkForSuccess();
-            setupFormListener();
-            
-            // Also check when URL changes (for form redirects)
-            let currentUrl = window.location.href;
-            setInterval(() => {
-                if (window.location.href !== currentUrl) {
-                    currentUrl = window.location.href;
-                    checkForSuccess();
-                }
-            }, 500);
-        });
-
-        // Add some interactive effects to the success message
-        document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('close-success')) {
-                closeSuccessMessage();
-            }
-        });
-    </script>
+/**
+ * Template 1: Inspection Report Email - Mobile Optimized
+ */
+function generateInspectionReportEmail(clientName, currentDate, data) {
+  const subject = `Mould Inspection Report - ${data.preferredDate || 'Your Property'}`;
+  
+  const body = `
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f8f9fa; -webkit-text-size-adjust: 100%;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f8f9fa; padding: 15px 10px;">
+    <tr>
+      <td align="center">
+        <!-- Mobile Container -->
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 100%; background-color: #ffffff; border-radius: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.12);">
+          <!-- Mobile Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #2d5a7c 0%, #3a7ca5 100%); padding: 40px 25px; text-align: center; color: white; border-radius: 20px 20px 0 0;">
+              <h1 style="margin: 0; font-size: 24px; font-weight: 800; line-height: 1.2;">MRC MOULD INSPECTION REPORT</h1>
+              <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">Professional Mould Assessment</p>
+            </td>
+          </tr>
+          
+          <!-- Mobile Content -->
+          <tr>
+            <td style="padding: 25px 20px;">
+              <!-- Mobile Meta Info -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f8f9fa; padding: 20px; border-radius: 15px; margin-bottom: 25px; border: 1px solid #e9ecef;">
+                <tr>
+                  <td>
+                    <p style="margin: 0 0 8px 0; font-size: 14px; color: #666;"><strong>To:</strong> ${data.clientEmail || 'Client'}</p>
+                    <p style="margin: 0; font-size: 14px; color: #666;"><strong>Date:</strong> ${currentDate}</p>
+                  </td>
+                </tr>
+              </table>
+              
+              <p style="margin: 0 0 20px 0; font-size: 16px; line-height: 1.6;">Dear ${clientName},</p>
+              
+              <p style="margin: 0 0 20px 0; font-size: 16px; line-height: 1.6;">Please find your <strong style="color: #2d5a7c;">Mould Inspection Report</strong> attached.</p>
+              
+              <!-- Mobile Highlight Box -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f0f8ff; border-left: 4px solid #3a7ca5; padding: 20px; margin: 20px 0;">
+                <tr>
+                  <td>
+                    <p style="margin: 0; font-size: 15px; line-height: 1.6;"><strong>Inspection Summary:</strong> Our inspection has identified mould contamination primarily caused by elevated humidity levels and inadequate ventilation.</p>
+                  </td>
+                </tr>
+              </table>
+              
+              <!-- Mobile Key Findings -->
+              <h2 style="color: #2d5a7c; border-bottom: 2px solid #3a7ca5; padding-bottom: 10px; margin: 25px 0 15px 0; font-size: 20px; font-weight: 700;">Key Findings</h2>
+              
+              <p style="margin: 0 0 15px 0; font-size: 16px; line-height: 1.6;"><strong>Affected Areas:</strong></p>
+              <ul style="margin: 0 0 20px 0; padding-left: 20px;">
+                <li style="margin-bottom: 8px; font-size: 15px;">Main bathroom surfaces</li>
+                <li style="margin-bottom: 8px; font-size: 15px;">Ensuite bathroom areas</li>
+                <li style="margin-bottom: 8px; font-size: 15px;">Adjacent bedroom ceiling</li>
+              </ul>
+              
+              <p style="margin: 0 0 15px 0; font-size: 16px; line-height: 1.6;"><strong>Primary Causes:</strong></p>
+              <p style="margin: 0 0 20px 0; font-size: 15px; line-height: 1.6;">Inadequate ventilation combined with elevated indoor humidity levels (68% RH measured).</p>
+              
+              <!-- Mobile Solutions -->
+              <h2 style="color: #2d5a7c; border-bottom: 2px solid #3a7ca5; padding-bottom: 10px; margin: 25px 0 15px 0; font-size: 20px; font-weight: 700;">Recommended Solutions</h2>
+              
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f8f9fa; padding: 18px; border-radius: 12px; margin: 12px 0; border-left: 4px solid #2a9d8f;">
+                <tr>
+                  <td>
+                    <h4 style="margin: 0 0 8px 0; color: #2d5a7c; font-size: 16px;">Professional Remediation</h4>
+                    <p style="margin: 0; font-size: 14px; line-height: 1.5;">IICRC-certified treatment including HEPA vacuuming and antimicrobial application.</p>
+                  </td>
+                </tr>
+              </table>
+              
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f8f9fa; padding: 18px; border-radius: 12px; margin: 12px 0; border-left: 4px solid #2a9d8f;">
+                <tr>
+                  <td>
+                    <h4 style="margin: 0 0 8px 0; color: #2d5a7c; font-size: 16px;">Ventilation Upgrade</h4>
+                    <p style="margin: 0; font-size: 14px; line-height: 1.5;">Install 80 CFM exhaust fans with run-on timers to prevent recurrence.</p>
+                  </td>
+                </tr>
+              </table>
+              
+              <!-- Mobile Investment -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background: linear-gradient(135deg, #2d5a7c, #3a7ca5); padding: 20px; border-radius: 15px; margin: 20px 0; text-align: center;">
+                <tr>
+                  <td>
+                    <p style="margin: 0 0 8px 0; font-size: 14px; color: white; opacity: 0.9;">Total Investment</p>
+                    <p style="margin: 0; font-size: 28px; font-weight: bold; color: white;">$4,850 + GST</p>
+                    <p style="margin: 8px 0 0 0; font-size: 13px; color: white; opacity: 0.8;">Includes 12-month warranty</p>
+                  </td>
+                </tr>
+              </table>
+              
+              <!-- Mobile CTA Button -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 25px 0; text-align: center;">
+                <tr>
+                  <td>
+                    <a href="${CONFIG.website}" style="display: inline-block; background: #e76f51; color: white; padding: 16px 30px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 16px; width: 90%; max-width: 280px;">View Full Report Details</a>
+                  </td>
+                </tr>
+              </table>
+              
+              <p style="margin: 0 0 15px 0; font-size: 15px; line-height: 1.6;">We understand mould issues can be concerning. We're here to support you through the complete resolution process.</p>
+              
+              <p style="margin: 0; font-size: 15px; line-height: 1.6;">Contact us with any questions about the findings or next steps.</p>
+            </td>
+          </tr>
+          
+          <!-- Mobile Footer -->
+          <tr>
+            <td style="background-color: #2d3748; color: white; padding: 30px 20px; text-align: center; border-radius: 0 0 20px 20px;">
+              <p style="margin: 0 0 15px 0; font-size: 18px; font-weight: bold;">${CONFIG.companyName}</p>
+              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td align="center">
+                    <p style="margin: 8px 0; font-size: 15px;">Phone: ${CONFIG.companyPhone}</p>
+                    <p style="margin: 8px 0; font-size: 15px;">Email: ${CONFIG.companyEmail}</p>
+                    <p style="margin: 8px 0; font-size: 15px;">Web: <a href="${CONFIG.website}" style="color: white; text-decoration: none;">${CONFIG.website}</a></p>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin: 15px 0 0 0; font-size: 13px; opacity: 0.8;">Restoring Your Spaces, Protecting Your Health</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
 </body>
 </html>
+  `;
+  
+  return { subject, body };
+}
+
+/**
+ * Template 2: New Lead Response Email - Mobile Optimized
+ */
+function generateNewLeadEmail(clientName, currentDate, data) {
+  const subject = `Thanks for Your Enquiry - MRC Mould`;
+  
+  const body = `
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f8f9fa; -webkit-text-size-adjust: 100%;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f8f9fa; padding: 15px 10px;">
+    <tr>
+      <td align="center">
+        <!-- Mobile Container -->
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 100%; background-color: #ffffff; border-radius: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.12);">
+          <!-- Mobile Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #2d5a7c 0%, #3a7ca5 100%); padding: 40px 25px; text-align: center; color: white; border-radius: 20px 20px 0 0;">
+              <h1 style="margin: 0; font-size: 24px; font-weight: 800; line-height: 1.2;">THANKS FOR YOUR ENQUIRY</h1>
+              <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">We're Here to Help</p>
+            </td>
+          </tr>
+          
+          <!-- Mobile Content -->
+          <tr>
+            <td style="padding: 25px 20px;">
+              <!-- Mobile Meta Info -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f8f9fa; padding: 20px; border-radius: 15px; margin-bottom: 25px; border: 1px solid #e9ecef;">
+                <tr>
+                  <td>
+                    <p style="margin: 0 0 8px 0; font-size: 14px; color: #666;"><strong>To:</strong> ${data.clientEmail || 'Client'}</p>
+                    <p style="margin: 0; font-size: 14px; color: #666;"><strong>Date:</strong> ${currentDate}</p>
+                  </td>
+                </tr>
+              </table>
+              
+              <p style="margin: 0 0 20px 0; font-size: 16px; line-height: 1.6;">Hi ${data.firstName || clientName},</p>
+              
+              <p style="margin: 0 0 20px 0; font-size: 16px; line-height: 1.6;">Thanks for reaching out to <strong style="color: #2d5a7c;">MRC Mould & Restoration Co.</strong></p>
+              
+              <p style="margin: 0 0 25px 0; font-size: 16px; line-height: 1.6;">We've received your enquiry about <strong style="color: #2d5a7c;">${data.serviceType || 'mould inspection'}</strong>.</p>
+              
+              <!-- Mobile Next Steps -->
+              <h2 style="color: #2d5a7c; border-bottom: 2px solid #3a7ca5; padding-bottom: 10px; margin: 25px 0 15px 0; font-size: 20px; font-weight: 700;">What Happens Next</h2>
+              
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 15px 0;">
+                <tr>
+                  <td style="padding: 12px 0; border-bottom: 1px solid #f0f0f0;">
+                    <p style="margin: 0; font-size: 15px;">✓ Review your enquiry details</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 12px 0; border-bottom: 1px solid #f0f0f0;">
+                    <p style="margin: 0; font-size: 15px;">✓ Contact you to discuss needs</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 12px 0;">
+                    <p style="margin: 0; font-size: 15px;">✓ Schedule professional inspection</p>
+                  </td>
+                </tr>
+              </table>
+              
+              <!-- Mobile Operating Hours -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f0f8ff; border-left: 4px solid #3a7ca5; padding: 20px; margin: 20px 0;">
+                <tr>
+                  <td>
+                    <p style="margin: 0; font-weight: bold; font-size: 16px;">Our Team Operates:</p>
+                    <p style="margin: 8px 0 0 0; font-size: 17px; color: #2d5a7c;">7 Days • 7am - 7pm</p>
+                  </td>
+                </tr>
+              </table>
+              
+              ${data.preferredDate ? `
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #fff3cd; padding: 15px; border-radius: 12px; margin: 15px 0; border: 1px solid #ffeaa7;">
+                <tr>
+                  <td>
+                    <p style="margin: 0; font-size: 15px; color: #856404;"><strong>Your Preferred Date:</strong> ${data.preferredDate}</p>
+                  </td>
+                </tr>
+              </table>
+              ` : ''}
+              
+              <!-- Mobile CTA Button -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 25px 0; text-align: center;">
+                <tr>
+                  <td>
+                    <a href="${CONFIG.website}" style="display: inline-block; background: #e76f51; color: white; padding: 16px 30px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 16px; width: 90%; max-width: 280px;">Learn More About Our Services</a>
+                  </td>
+                </tr>
+              </table>
+              
+              <p style="margin: 0; font-size: 15px; line-height: 1.6; text-align: center; color: #666;">We look forward to helping you restore your property to a safe, healthy condition.</p>
+            </td>
+          </tr>
+          
+          <!-- Mobile Footer -->
+          <tr>
+            <td style="background-color: #2d3748; color: white; padding: 30px 20px; text-align: center; border-radius: 0 0 20px 20px;">
+              <p style="margin: 0 0 15px 0; font-size: 18px; font-weight: bold;">${CONFIG.companyName}</p>
+              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td align="center">
+                    <p style="margin: 8px 0; font-size: 15px;">Phone: ${CONFIG.companyPhone}</p>
+                    <p style="margin: 8px 0; font-size: 15px;">Email: ${CONFIG.companyEmail}</p>
+                    <p style="margin: 8px 0; font-size: 15px;">Web: <a href="${CONFIG.website}" style="color: white; text-decoration: none;">${CONFIG.website}</a></p>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin: 15px 0 0 0; font-size: 13px; opacity: 0.8;">Restoring Your Spaces, Protecting Your Health</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `;
+  
+  return { subject, body };
+}
+
+/**
+ * Template 3: Inspection Booking Confirmation - Mobile Optimized
+ */
+function generateInspectionBookingEmail(clientName, currentDate, data) {
+  const subject = `Inspection Confirmed - ${data.preferredDate || 'Your Booking'}`;
+  
+  const body = `
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f8f9fa; -webkit-text-size-adjust: 100%;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f8f9fa; padding: 15px 10px;">
+    <tr>
+      <td align="center">
+        <!-- Mobile Container -->
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 100%; background-color: #ffffff; border-radius: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.12);">
+          <!-- Mobile Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #2d5a7c 0%, #3a7ca5 100%); padding: 40px 25px; text-align: center; color: white; border-radius: 20px 20px 0 0;">
+              <h1 style="margin: 0; font-size: 24px; font-weight: 800; line-height: 1.2;">INSPECTION CONFIRMED</h1>
+              <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">Professional Mould Inspection</p>
+            </td>
+          </tr>
+          
+          <!-- Mobile Content -->
+          <tr>
+            <td style="padding: 25px 20px;">
+              <!-- Mobile Meta Info -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f8f9fa; padding: 20px; border-radius: 15px; margin-bottom: 25px; border: 1px solid #e9ecef;">
+                <tr>
+                  <td>
+                    <p style="margin: 0 0 8px 0; font-size: 14px; color: #666;"><strong>To:</strong> ${data.clientEmail || 'Client'}</p>
+                    <p style="margin: 0; font-size: 14px; color: #666;"><strong>Date:</strong> ${currentDate}</p>
+                  </td>
+                </tr>
+              </table>
+              
+              <p style="margin: 0 0 20px 0; font-size: 16px; line-height: 1.6;">Dear ${clientName},</p>
+              
+              <p style="margin: 0 0 20px 0; font-size: 16px; line-height: 1.6;">Thank you for booking with <strong style="color: #2d5a7c;">MRC Mould & Restoration Co.</strong></p>
+              
+              <!-- Mobile Booking Details -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background: linear-gradient(135deg, #e8f4f8, #d4e7ff); padding: 25px; border-radius: 15px; margin: 20px 0; border: 2px solid #3a7ca5; text-align: center;">
+                <tr>
+                  <td>
+                    <h3 style="margin: 0 0 15px 0; color: #2d5a7c; font-size: 20px;">Booking Details</h3>
+                    <p style="margin: 10px 0; font-size: 17px;"><strong>Service:</strong> ${data.serviceType || 'Mould Inspection'}</p>
+                    ${data.preferredDate ? `<p style="margin: 10px 0; font-size: 17px;"><strong>Preferred Date:</strong> ${data.preferredDate}</p>` : ''}
+                    <p style="margin: 15px 0 0 0; color: #2a9d8f; font-weight: bold; font-size: 18px;">Status: Confirmed ✓</p>
+                  </td>
+                </tr>
+              </table>
+              
+              <!-- Mobile Next Steps -->
+              <h2 style="color: #2d5a7c; border-bottom: 2px solid #3a7ca5; padding-bottom: 10px; margin: 25px 0 15px 0; font-size: 20px; font-weight: 700;">Next Steps</h2>
+              
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 15px 0;">
+                <tr>
+                  <td style="padding: 12px 0; border-bottom: 1px solid #f0f0f0;">
+                    <p style="margin: 0; font-size: 15px;">• Contact within 24 hours</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 12px 0; border-bottom: 1px solid #f0f0f0;">
+                    <p style="margin: 0; font-size: 15px;">• Arrange inspection time</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 12px 0;">
+                    <p style="margin: 0; font-size: 15px;">• Provide detailed report</p>
+                  </td>
+                </tr>
+              </table>
+              
+              <!-- Mobile Free Inspection -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #d4edda; padding: 20px; border-radius: 12px; margin: 20px 0; border: 1px solid #c3e6cb;">
+                <tr>
+                  <td style="text-align: center;">
+                    <p style="margin: 0; font-size: 18px; font-weight: bold; color: #155724;">FREE INSPECTION</p>
+                    <p style="margin: 8px 0 0 0; font-size: 15px; color: #155724;">Includes comprehensive report with treatment options</p>
+                  </td>
+                </tr>
+              </table>
+              
+              <!-- Mobile CTA Button -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 25px 0; text-align: center;">
+                <tr>
+                  <td>
+                    <a href="${CONFIG.website}" style="display: inline-block; background: #e76f51; color: white; padding: 16px 30px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 16px; width: 90%; max-width: 280px;">Learn About Our Process</a>
+                  </td>
+                </tr>
+              </table>
+              
+              <p style="margin: 0; font-size: 15px; line-height: 1.6; text-align: center; color: #666;">We look forward to resolving your mould concerns quickly and professionally.</p>
+            </td>
+          </tr>
+          
+          <!-- Mobile Footer -->
+          <tr>
+            <td style="background-color: #2d3748; color: white; padding: 30px 20px; text-align: center; border-radius: 0 0 20px 20px;">
+              <p style="margin: 0 0 15px 0; font-size: 18px; font-weight: bold;">${CONFIG.companyName}</p>
+              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td align="center">
+                    <p style="margin: 8px 0; font-size: 15px;">Phone: ${CONFIG.companyPhone}</p>
+                    <p style="margin: 8px 0; font-size: 15px;">Email: ${CONFIG.companyEmail}</p>
+                    <p style="margin: 8px 0; font-size: 15px;">Web: <a href="${CONFIG.website}" style="color: white; text-decoration: none;">${CONFIG.website}</a></p>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin: 15px 0 0 0; font-size: 13px; opacity: 0.8;">Restoring Your Spaces, Protecting Your Health</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `;
+  
+  return { subject, body };
+}
+
+/**
+ * Test all mobile templates
+ */
+function testAllMobileTemplates() {
+  const testEmail = "atifahnafchw@gmail.com";
+  const testName = "John Smith";
+  
+  console.log("Testing Mobile Email Templates...");
+  
+  const templates = [
+    { type: "inspection_report", name: "Inspection Report" },
+    { type: "new_lead", name: "New Lead" },
+    { type: "inspection_booking", name: "Inspection Booking" }
+  ];
+  
+  templates.forEach(template => {
+    const result = sendMRCEmail(testEmail, testName, template.type, {
+      clientEmail: testEmail,
+      serviceType: "Mould Inspection",
+      urgencyLevel: "normal",
+      preferredDate: "15th November 2024",
+      firstName: "John"
+    });
+    
+    console.log(`${template.name}:`, result.success ? "MOBILE SUCCESS" : "FAILED");
+  });
+}
+
+/**
+ * Quick mobile test
+ */
+function testMobileEmail() {
+  const clientEmail = "atifahnafchw@gmail.com";
+  const clientName = "Mobile Test";
+  const templateType = "new_lead";
+  
+  const additionalData = {
+    clientEmail: clientEmail,
+    serviceType: "Mould Inspection",
+    urgencyLevel: "rush",
+    preferredDate: "Today",
+    firstName: "Mobile"
+  };
+  
+  const result = sendMRCEmail(clientEmail, clientName, templateType, additionalData);
+  console.log("Mobile test result:", result);
+  return result;
+}
+
+// Helper functions
+function checkTriggers() {
+  const triggers = ScriptApp.getProjectTriggers();
+  console.log("Mobile triggers:");
+  triggers.forEach(trigger => {
+    console.log(`- ${trigger.getHandlerFunction()}`);
+  });
+}
+
+function debugMobile() {
+  console.log("=== MOBILE DEBUG ===");
+  const testResult = testMobileEmail();
+  console.log("Test result:", testResult);
+  console.log("=== DEBUG COMPLETE ===");
+}

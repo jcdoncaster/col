@@ -21,40 +21,64 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #000000;
             min-height: 100vh;
             padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .construction-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .building-material {
+            position: absolute;
+            background: rgba(45, 90, 124, 0.1);
+            border: 1px solid rgba(58, 124, 165, 0.3);
         }
 
         .container {
             max-width: 800px;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
 
         .header {
-            background: white;
+            background: rgba(255, 255, 255, 0.95);
             padding: 30px;
             border-radius: 20px 20px 0 0;
             text-align: center;
             margin-bottom: 0;
+            backdrop-filter: blur(10px);
         }
 
         .header h1 {
             color: var(--primary);
             font-size: 2.2em;
             margin-bottom: 10px;
+            font-weight: 700;
         }
 
         .header p {
             color: var(--dark);
             font-size: 1.1em;
+            opacity: 0.8;
         }
 
         .form-container {
-            background: white;
+            background: rgba(255, 255, 255, 0.95);
             border-radius: 0 0 20px 20px;
             padding: 0;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
         }
 
         .google-form {
@@ -84,14 +108,15 @@
     </style>
 </head>
 <body>
+    <div class="construction-bg" id="constructionBg"></div>
+    
     <div class="container">
         <div class="header">
             <h1>MRC Mould & Restoration Co.</h1>
-            <p>Book Your Free Mould Inspection</p>
+            <p>Professional Mould Inspection & Restoration Services</p>
         </div>
         
         <div class="form-container">
-            <!-- Your Google Form Embed -->
             <iframe 
                 src="https://docs.google.com/forms/d/e/1FAIpQLScFPDoDp-rwHPd_mhk70nQvc4pTPahzuwkBpjeWVssYWEPeLQ/viewform?embedded=true" 
                 class="google-form"
@@ -100,5 +125,195 @@
             </iframe>
         </div>
     </div>
+
+    <script>
+        // Create animated construction materials background
+        function createConstructionBackground() {
+            const container = document.getElementById('constructionBg');
+            const materials = [];
+            
+            // Different types of building materials
+            const materialTypes = [
+                { width: 120, height: 20, color: 'rgba(45, 90, 124, 0.15)', border: 'rgba(58, 124, 165, 0.4)' }, // Beam
+                { width: 80, height: 80, color: 'rgba(58, 124, 165, 0.12)', border: 'rgba(45, 90, 124, 0.3)' }, // Block
+                { width: 40, height: 40, color: 'rgba(231, 111, 81, 0.1)', border: 'rgba(231, 111, 81, 0.3)' }, // Brick
+                { width: 100, height: 10, color: 'rgba(45, 90, 124, 0.1)', border: 'rgba(58, 124, 165, 0.3)' }, // Pipe
+                { width: 60, height: 60, color: 'rgba(58, 124, 165, 0.08)', border: 'rgba(45, 90, 124, 0.25)' } // Tile
+            ];
+            
+            // Create materials
+            for (let i = 0; i < 25; i++) {
+                const material = document.createElement('div');
+                material.className = 'building-material';
+                
+                const type = materialTypes[Math.floor(Math.random() * materialTypes.length)];
+                const left = Math.random() * 100;
+                const top = Math.random() * 100;
+                const rotation = Math.random() * 360;
+                
+                material.style.width = `${type.width}px`;
+                material.style.height = `${type.height}px`;
+                material.style.left = `${left}%`;
+                material.style.top = `${top}%`;
+                material.style.background = type.color;
+                material.style.border = `1px solid ${type.border}`;
+                material.style.borderRadius = type === materialTypes[1] ? '8px' : '0';
+                material.style.transform = `rotate(${rotation}deg)`;
+                material.style.opacity = '0';
+                
+                container.appendChild(material);
+                materials.push(material);
+            }
+            
+            // Animate materials
+            materials.forEach((material, index) => {
+                const startX = parseFloat(material.style.left);
+                const startY = parseFloat(material.style.top);
+                
+                // Create floating animation
+                const animate = () => {
+                    const now = Date.now() * 0.001;
+                    const x = startX + Math.sin(now * 0.5 + index) * 10; // Horizontal movement
+                    const y = startY + Math.cos(now * 0.3 + index) * 8;  // Vertical movement
+                    const rotate = Math.sin(now * 0.2 + index) * 5;      // Gentle rotation
+                    
+                    material.style.left = `${x}%`;
+                    material.style.top = `${y}%`;
+                    material.style.transform = `rotate(${parseFloat(material.style.transform.replace('rotate(', '').replace('deg)', '')) + rotate}deg)`;
+                    
+                    requestAnimationFrame(animate);
+                };
+                
+                // Fade in
+                setTimeout(() => {
+                    material.style.transition = 'opacity 2s ease';
+                    material.style.opacity = '1';
+                    animate();
+                }, index * 100);
+            });
+        }
+
+        // Create pulsing background effect
+        function createPulseEffect() {
+            const container = document.getElementById('constructionBg');
+            
+            setInterval(() => {
+                const pulse = document.createElement('div');
+                pulse.style.position = 'absolute';
+                pulse.style.left = `${Math.random() * 100}%`;
+                pulse.style.top = `${Math.random() * 100}%`;
+                pulse.style.width = '200px';
+                pulse.style.height = '200px';
+                pulse.style.background = 'radial-gradient(circle, rgba(58, 124, 165, 0.1) 0%, rgba(58, 124, 165, 0) 70%)';
+                pulse.style.borderRadius = '50%';
+                pulse.style.opacity = '0';
+                pulse.style.transform = 'scale(0)';
+                
+                container.appendChild(pulse);
+                
+                // Animate pulse
+                setTimeout(() => {
+                    pulse.style.transition = 'all 3s ease-out';
+                    pulse.style.opacity = '1';
+                    pulse.style.transform = 'scale(1)';
+                }, 10);
+                
+                // Remove pulse after animation
+                setTimeout(() => {
+                    pulse.style.opacity = '0';
+                    setTimeout(() => {
+                        if (pulse.parentNode) {
+                            pulse.parentNode.removeChild(pulse);
+                        }
+                    }, 3000);
+                }, 100);
+            }, 2000);
+        }
+
+        // Create floating particles
+        function createFloatingParticles() {
+            const container = document.getElementById('constructionBg');
+            
+            for (let i = 0; i < 15; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'absolute';
+                particle.style.width = '4px';
+                particle.style.height = '4px';
+                particle.style.background = 'rgba(58, 124, 165, 0.6)';
+                particle.style.borderRadius = '50%';
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                particle.style.opacity = '0';
+                
+                container.appendChild(particle);
+                
+                // Animate particle
+                setTimeout(() => {
+                    particle.style.transition = 'opacity 1s ease';
+                    particle.style.opacity = '1';
+                    
+                    const animateParticle = () => {
+                        const newX = Math.random() * 100;
+                        const newY = Math.random() * 100;
+                        
+                        particle.style.transition = 'all 8s linear';
+                        particle.style.left = `${newX}%`;
+                        particle.style.top = `${newY}%`;
+                        
+                        setTimeout(animateParticle, 8000);
+                    };
+                    
+                    animateParticle();
+                }, i * 300);
+            }
+        }
+
+        // Initialize all effects when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            createConstructionBackground();
+            createPulseEffect();
+            createFloatingParticles();
+            
+            // Add subtle background gradient animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes gradientShift {
+                    0% { background: linear-gradient(135deg, #000000 0%, #0a0f1c 100%); }
+                    50% { background: linear-gradient(135deg, #0a0f1c 0%, #000000 100%); }
+                    100% { background: linear-gradient(135deg, #000000 0%, #0a0f1c 100%); }
+                }
+                body {
+                    animation: gradientShift 20s ease infinite;
+                }
+            `;
+            document.head.appendChild(style);
+        });
+
+        // Add interactive effect on mouse move
+        document.addEventListener('mousemove', function(e) {
+            const materials = document.querySelectorAll('.building-material');
+            const mouseX = e.clientX / window.innerWidth;
+            const mouseY = e.clientY / window.innerHeight;
+            
+            materials.forEach((material, index) => {
+                const rect = material.getBoundingClientRect();
+                const materialX = rect.left + rect.width / 2;
+                const materialY = rect.top + rect.height / 2;
+                
+                const distance = Math.sqrt(
+                    Math.pow(e.clientX - materialX, 2) + 
+                    Math.pow(e.clientY - materialY, 2)
+                );
+                
+                if (distance < 200) {
+                    const force = (200 - distance) / 200;
+                    const moveX = (e.clientX - materialX) * force * 0.02;
+                    const moveY = (e.clientY - materialY) * force * 0.02;
+                    
+                    material.style.transform += ` translate(${moveX}px, ${moveY}px)`;
+                }
+            });
+        });
+    </script>
 </body>
 </html>

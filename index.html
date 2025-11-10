@@ -3,316 +3,460 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MRC Mould & Restoration Co. - Book Inspection</title>
+    <title>Mould Inspection Request</title>
     <style>
+        :root {
+            --primary-blue: #1a73e8;
+            --dark-blue: #0d47a1;
+            --light-blue: #e8f0fe;
+            --black: #202124;
+            --white: #ffffff;
+            --gray: #f8f9fa;
+            --border-gray: #dadce0;
+        }
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
         }
-
-        :root {
-            --primary: #2d5a7c;
-            --primary-light: #3a7ca5;
-            --accent: #e76f51;
-            --light: #f8f9fa;
-            --dark: #2d3748;
-        }
-
+        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #000000;
-            min-height: 100vh;
+            background-color: var(--gray);
+            color: var(--black);
+            line-height: 1.6;
             padding: 20px;
-            overflow-x: hidden;
-            position: relative;
         }
-
-        .construction-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        .building-material {
-            position: absolute;
-            background: rgba(45, 90, 124, 0.1);
-            border: 1px solid rgba(58, 124, 165, 0.3);
-        }
-
+        
         .container {
             max-width: 800px;
             margin: 0 auto;
-            position: relative;
-            z-index: 1;
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
         }
-
-        .header {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 30px;
-            border-radius: 20px 20px 0 0;
+        
+        header {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            padding: 20px;
             text-align: center;
-            margin-bottom: 0;
-            backdrop-filter: blur(10px);
         }
-
-        .header h1 {
-            color: var(--primary);
-            font-size: 2.2em;
-            margin-bottom: 10px;
-            font-weight: 700;
+        
+        h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
         }
-
-        .header p {
-            color: var(--dark);
-            font-size: 1.1em;
-            opacity: 0.8;
+        
+        .form-section {
+            padding: 25px;
+            border-bottom: 1px solid var(--border-gray);
         }
-
-        .form-container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 0 0 20px 20px;
-            padding: 0;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        
+        .form-section:last-of-type {
+            border-bottom: none;
         }
-
-        .google-form {
+        
+        h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: var(--dark-blue);
+            border-bottom: 1px solid var(--border-gray);
+            padding-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--black);
+        }
+        
+        .required::after {
+            content: " *";
+            color: #d93025;
+        }
+        
+        input[type="text"],
+        input[type="tel"],
+        input[type="email"],
+        textarea,
+        select {
             width: 100%;
-            height: 1300px;
-            border: none;
-            border-radius: 0 0 20px 20px;
+            padding: 12px;
+            border: 1px solid var(--border-gray);
+            border-radius: 4px;
+            font-size: 16px;
+            transition: border 0.2s, box-shadow 0.2s;
         }
-
-        @media (max-width: 768px) {
-            body {
+        
+        input[type="text"]:focus,
+        input[type="tel"]:focus,
+        input[type="email"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+        }
+        
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .urgency-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .urgency-option {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border: 1px solid var(--border-gray);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        
+        .urgency-option:hover {
+            background-color: var(--light-blue);
+        }
+        
+        .urgency-option.selected {
+            background-color: var(--light-blue);
+            border-color: var(--primary-blue);
+        }
+        
+        .urgency-option input {
+            margin-right: 10px;
+        }
+        
+        .included-list {
+            list-style: none;
+            margin-top: 15px;
+        }
+        
+        .included-list li {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        
+        .included-list li::before {
+            content: "✓";
+            color: var(--primary-blue);
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 18px;
+        }
+        
+        .submit-btn {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            border: none;
+            border-radius: 4px;
+            padding: 14px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .submit-btn:hover {
+            background-color: var(--dark-blue);
+        }
+        
+        .submit-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .example-text {
+            color: #5f6368;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .success-message {
+            display: none;
+            background-color: #d4edda;
+            color: #155724;
+            padding: 20px;
+            border-radius: 4px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .error-message {
+            display: none;
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 4px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        @media (max-width: 600px) {
+            .form-section {
+                padding: 15px;
+            }
+            
+            .urgency-options {
+                gap: 8px;
+            }
+            
+            .urgency-option {
                 padding: 10px;
-            }
-            
-            .header {
-                padding: 25px 20px;
-            }
-            
-            .header h1 {
-                font-size: 1.8em;
-            }
-            
-            .google-form {
-                height: 1400px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="construction-bg" id="constructionBg"></div>
-    
     <div class="container">
-        <div class="header">
-            <h1>MRC Mould & Restoration Co.</h1>
-            <p>Professional Mould Inspection & Restoration Services</p>
+        <header>
+            <h1>Mould Inspection Request</h1>
+        </header>
+        
+        <div id="successMessage" class="success-message">
+            <h3>Thank You!</h3>
+            <p>Your inspection request has been submitted successfully. You will receive a confirmation email shortly.</p>
         </div>
         
-        <div class="form-container">
-            <iframe 
-                src="https://docs.google.com/forms/d/e/1FAIpQLScFPDoDp-rwHPd_mhk70nQvc4pTPahzuwkBpjeWVssYWEPeLQ/viewform?embedded=true" 
-                class="google-form"
-                loading="lazy">
-                Loading...
-            </iframe>
+        <div id="errorMessage" class="error-message">
+            <h3>Error</h3>
+            <p id="errorText">There was an error submitting your request. Please try again.</p>
         </div>
+        
+        <form id="inspectionForm">
+            <!-- Your Details Section -->
+            <div class="form-section">
+                <h2>Your Details</h2>
+                
+                <div class="form-group">
+                    <label for="firstName" class="required">First Name</label>
+                    <input type="text" id="firstName" name="firstName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="lastName" class="required">Last Name</label>
+                    <input type="text" id="lastName" name="lastName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email" class="required">Email Address</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+            </div>
+            
+            <!-- Property Location Section -->
+            <div class="form-section">
+                <h2>Property Location</h2>
+                
+                <div class="form-group">
+                    <label for="streetAddress" class="required">Street Number and Address</label>
+                    <input type="text" id="streetAddress" name="streetAddress" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="suburb" class="required">Suburb</label>
+                    <input type="text" id="suburb" name="suburb" required>
+                </div>
+            </div>
+            
+            <!-- Inspection Details Section -->
+            <div class="form-section">
+                <h2>Inspection Details</h2>
+                
+                <div class="form-group">
+                    <label class="required">Booking Urgency</label>
+                    <div class="urgency-options">
+                        <div class="urgency-option">
+                            <input type="radio" id="urgency-asap" name="urgency" value="ASAP" required>
+                            <label for="urgency-asap">ASAP</label>
+                        </div>
+                        <div class="urgency-option">
+                            <input type="radio" id="urgency-week" name="urgency" value="within a week">
+                            <label for="urgency-week">Within a week</label>
+                        </div>
+                        <div class="urgency-option">
+                            <input type="radio" id="urgency-couple-weeks" name="urgency" value="next couple of weeks">
+                            <label for="urgency-couple-weeks">Next couple of weeks</label>
+                        </div>
+                        <div class="urgency-option">
+                            <input type="radio" id="urgency-month" name="urgency" value="within a month">
+                            <label for="urgency-month">Within a month</label>
+                        </div>
+                        <div class="urgency-option">
+                            <input type="radio" id="urgency-couple-months" name="urgency" value="next couple of months">
+                            <label for="urgency-couple-months">Next couple of months</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="serviceType" class="required">Service Type</label>
+                    <select id="serviceType" name="serviceType" required>
+                        <option value="1">Mould Inspection</option>
+                        <option value="2">Repair</option>
+                        <option value="3">Restoration</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="issueDescription" class="required">Description of the Issue</label>
+                    <textarea id="issueDescription" name="issueDescription" required placeholder="Please describe the mould problem"></textarea>
+                    <p class="example-text">Example: Mould growth visible on bathroom ceiling and walls. Recent leak from upstairs unit may be the cause.</p>
+                </div>
+            </div>
+            
+            <!-- What's Included Section -->
+            <div class="form-section">
+                <h2>Request Free Inspection</h2>
+                
+                <h3>What's Included</h3>
+                <ul class="included-list">
+                    <li>Free comprehensive inspection</li>
+                    <li>No obligation, no hidden fees</li>
+                    <li>Detailed report</li>
+                </ul>
+                
+                <button type="submit" class="submit-btn" id="submitBtn">Submit Request</button>
+                <div id="loading" class="loading">
+                    <p>Submitting your request...</p>
+                </div>
+            </div>
+        </form>
     </div>
 
     <script>
-        // Create animated construction materials background
-        function createConstructionBackground() {
-            const container = document.getElementById('constructionBg');
-            const materials = [];
+        // 🔥 IMPORTANT: Replace this with your actual Google Apps Script Web App URL
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID_HERE/exec';
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const urgencyOptions = document.querySelectorAll('.urgency-option');
+            const form = document.getElementById('inspectionForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const loading = document.getElementById('loading');
+            const successMessage = document.getElementById('successMessage');
+            const errorMessage = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
             
-            // Different types of building materials
-            const materialTypes = [
-                { width: 120, height: 20, color: 'rgba(45, 90, 124, 0.15)', border: 'rgba(58, 124, 165, 0.4)' }, // Beam
-                { width: 80, height: 80, color: 'rgba(58, 124, 165, 0.12)', border: 'rgba(45, 90, 124, 0.3)' }, // Block
-                { width: 40, height: 40, color: 'rgba(231, 111, 81, 0.1)', border: 'rgba(231, 111, 81, 0.3)' }, // Brick
-                { width: 100, height: 10, color: 'rgba(45, 90, 124, 0.1)', border: 'rgba(58, 124, 165, 0.3)' }, // Pipe
-                { width: 60, height: 60, color: 'rgba(58, 124, 165, 0.08)', border: 'rgba(45, 90, 124, 0.25)' } // Tile
-            ];
-            
-            // Create materials
-            for (let i = 0; i < 25; i++) {
-                const material = document.createElement('div');
-                material.className = 'building-material';
-                
-                const type = materialTypes[Math.floor(Math.random() * materialTypes.length)];
-                const left = Math.random() * 100;
-                const top = Math.random() * 100;
-                const rotation = Math.random() * 360;
-                
-                material.style.width = `${type.width}px`;
-                material.style.height = `${type.height}px`;
-                material.style.left = `${left}%`;
-                material.style.top = `${top}%`;
-                material.style.background = type.color;
-                material.style.border = `1px solid ${type.border}`;
-                material.style.borderRadius = type === materialTypes[1] ? '8px' : '0';
-                material.style.transform = `rotate(${rotation}deg)`;
-                material.style.opacity = '0';
-                
-                container.appendChild(material);
-                materials.push(material);
-            }
-            
-            // Animate materials
-            materials.forEach((material, index) => {
-                const startX = parseFloat(material.style.left);
-                const startY = parseFloat(material.style.top);
-                
-                // Create floating animation
-                const animate = () => {
-                    const now = Date.now() * 0.001;
-                    const x = startX + Math.sin(now * 0.5 + index) * 10; // Horizontal movement
-                    const y = startY + Math.cos(now * 0.3 + index) * 8;  // Vertical movement
-                    const rotate = Math.sin(now * 0.2 + index) * 5;      // Gentle rotation
+            // Add click handlers for urgency options
+            urgencyOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const radio = this.querySelector('input[type="radio"]');
+                    radio.checked = true;
                     
-                    material.style.left = `${x}%`;
-                    material.style.top = `${y}%`;
-                    material.style.transform = `rotate(${parseFloat(material.style.transform.replace('rotate(', '').replace('deg)', '')) + rotate}deg)`;
-                    
-                    requestAnimationFrame(animate);
-                };
-                
-                // Fade in
-                setTimeout(() => {
-                    material.style.transition = 'opacity 2s ease';
-                    material.style.opacity = '1';
-                    animate();
-                }, index * 100);
+                    // Update visual selection
+                    urgencyOptions.forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
             });
-        }
-
-        // Create pulsing background effect
-        function createPulseEffect() {
-            const container = document.getElementById('constructionBg');
             
-            setInterval(() => {
-                const pulse = document.createElement('div');
-                pulse.style.position = 'absolute';
-                pulse.style.left = `${Math.random() * 100}%`;
-                pulse.style.top = `${Math.random() * 100}%`;
-                pulse.style.width = '200px';
-                pulse.style.height = '200px';
-                pulse.style.background = 'radial-gradient(circle, rgba(58, 124, 165, 0.1) 0%, rgba(58, 124, 165, 0) 70%)';
-                pulse.style.borderRadius = '50%';
-                pulse.style.opacity = '0';
-                pulse.style.transform = 'scale(0)';
+            // Form submission handler
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
                 
-                container.appendChild(pulse);
+                // Basic validation
+                const requiredFields = this.querySelectorAll('[required]');
+                let isValid = true;
                 
-                // Animate pulse
-                setTimeout(() => {
-                    pulse.style.transition = 'all 3s ease-out';
-                    pulse.style.opacity = '1';
-                    pulse.style.transform = 'scale(1)';
-                }, 10);
+                requiredFields.forEach(field => {
+                    if (!field.value.trim()) {
+                        isValid = false;
+                        field.style.borderColor = '#d93025';
+                    } else {
+                        field.style.borderColor = '';
+                    }
+                });
                 
-                // Remove pulse after animation
-                setTimeout(() => {
-                    pulse.style.opacity = '0';
-                    setTimeout(() => {
-                        if (pulse.parentNode) {
-                            pulse.parentNode.removeChild(pulse);
-                        }
-                    }, 3000);
-                }, 100);
-            }, 2000);
-        }
-
-        // Create floating particles
-        function createFloatingParticles() {
-            const container = document.getElementById('constructionBg');
-            
-            for (let i = 0; i < 15; i++) {
-                const particle = document.createElement('div');
-                particle.style.position = 'absolute';
-                particle.style.width = '4px';
-                particle.style.height = '4px';
-                particle.style.background = 'rgba(58, 124, 165, 0.6)';
-                particle.style.borderRadius = '50%';
-                particle.style.left = `${Math.random() * 100}%`;
-                particle.style.top = `${Math.random() * 100}%`;
-                particle.style.opacity = '0';
+                if (!isValid) {
+                    showError('Please fill in all required fields.');
+                    return;
+                }
                 
-                container.appendChild(particle);
+                // Show loading state
+                submitBtn.disabled = true;
+                loading.style.display = 'block';
+                hideMessages();
                 
-                // Animate particle
-                setTimeout(() => {
-                    particle.style.transition = 'opacity 1s ease';
-                    particle.style.opacity = '1';
-                    
-                    const animateParticle = () => {
-                        const newX = Math.random() * 100;
-                        const newY = Math.random() * 100;
-                        
-                        particle.style.transition = 'all 8s linear';
-                        particle.style.left = `${newX}%`;
-                        particle.style.top = `${newY}%`;
-                        
-                        setTimeout(animateParticle, 8000);
+                try {
+                    // Prepare form data for Google Apps Script
+                    const formData = new FormData(form);
+                    const formObject = {
+                        firstName: formData.get('firstName'),
+                        lastName: formData.get('lastName'),
+                        email: formData.get('email'),
+                        streetAddress: formData.get('streetAddress'),
+                        suburb: formData.get('suburb'),
+                        urgency: formData.get('urgency'),
+                        serviceType: formData.get('serviceType'),
+                        issueDescription: formData.get('issueDescription'),
+                        timestamp: new Date().toISOString()
                     };
                     
-                    animateParticle();
-                }, i * 300);
-            }
-        }
-
-        // Initialize all effects when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            createConstructionBackground();
-            createPulseEffect();
-            createFloatingParticles();
-            
-            // Add subtle background gradient animation
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes gradientShift {
-                    0% { background: linear-gradient(135deg, #000000 0%, #0a0f1c 100%); }
-                    50% { background: linear-gradient(135deg, #0a0f1c 0%, #000000 100%); }
-                    100% { background: linear-gradient(135deg, #000000 0%, #0a0f1c 100%); }
-                }
-                body {
-                    animation: gradientShift 20s ease infinite;
-                }
-            `;
-            document.head.appendChild(style);
-        });
-
-        // Add interactive effect on mouse move
-        document.addEventListener('mousemove', function(e) {
-            const materials = document.querySelectorAll('.building-material');
-            const mouseX = e.clientX / window.innerWidth;
-            const mouseY = e.clientY / window.innerHeight;
-            
-            materials.forEach((material, index) => {
-                const rect = material.getBoundingClientRect();
-                const materialX = rect.left + rect.width / 2;
-                const materialY = rect.top + rect.height / 2;
-                
-                const distance = Math.sqrt(
-                    Math.pow(e.clientX - materialX, 2) + 
-                    Math.pow(e.clientY - materialY, 2)
-                );
-                
-                if (distance < 200) {
-                    const force = (200 - distance) / 200;
-                    const moveX = (e.clientX - materialX) * force * 0.02;
-                    const moveY = (e.clientY - materialY) * force * 0.02;
+                    // Send data to Google Apps Script
+                    const response = await fetch(GOOGLE_SCRIPT_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(formObject)
+                    });
                     
-                    material.style.transform += ` translate(${moveX}px, ${moveY}px)`;
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showSuccess();
+                        form.reset();
+                        urgencyOptions.forEach(opt => opt.classList.remove('selected'));
+                    } else {
+                        showError(result.error || 'There was an error submitting your request.');
+                    }
+                    
+                } catch (error) {
+                    console.error('Error submitting form:', error);
+                    showError('Network error. Please check your connection and try again.');
+                } finally {
+                    submitBtn.disabled = false;
+                    loading.style.display = 'none';
                 }
             });
+            
+            function showSuccess() {
+                successMessage.style.display = 'block';
+                errorMessage.style.display = 'none';
+                form.style.display = 'none';
+            }
+            
+            function showError(message) {
+                errorText.textContent = message;
+                errorMessage.style.display = 'block';
+                successMessage.style.display = 'none';
+            }
+            
+            function hideMessages() {
+                successMessage.style.display = 'none';
+                errorMessage.style.display = 'none';
+            }
         });
     </script>
 </body>
